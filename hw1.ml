@@ -66,7 +66,7 @@ let rec _goThrough((i: int), (stop : int), (max : int), (vals : (int) list)) =
   else (if (stop + List.hd vals >= max) then i - 1 else _goThrough(i+1, stop + List.hd vals, max, List.tl vals))
 
 (* Iterate through list recursively, each time subtracting val at index from sum, break when sum <= 0 *)
-let number_before_reaching_sum((nums : (int) list), (sum : int)) = 
+let number_before_reaching_sum((sum : int), (nums : (int) list)) = 
   _goThrough(1, 0, sum, nums)
 
 (* 9 *)
