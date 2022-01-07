@@ -73,7 +73,7 @@ let number_before_reaching_sum((sum : int), (nums : (int) list)) =
 let daysinmonths = [31; 28; 31; 30; 31; 30; 31; 31; 30; 31; 30; 31]
 (* Pass daysinmonths and given day into number_before_reaching_sum and get result +1  *)
 let what_month((day : int)) = 
-  (1 + number_before_reaching_sum(daysinmonths, day))
+  (1 + number_before_reaching_sum(day, daysinmonths))
 
 (* 10 *)
 (* Helper function that iterates through two nums and returns a list of the nums inbetween *)
