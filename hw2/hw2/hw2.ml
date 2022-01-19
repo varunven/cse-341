@@ -25,43 +25,75 @@ let sort xs = List.sort compare xs
 (* OCaml's string_of_float is not quite RFC compliant due to its tendency
    to output whole numbers with trailing decimal points without a zero.
    But, printf does the job how we want. *)
+  
 let json_string_of_float f =
   Printf.sprintf "%g" f
-  
+
+let fstpair(a, _) = a
+let sndpair(_, b) = b
+
+let rec recurse_for_silly_json(i : int) = 
+  let ifloat = float_of_int(i) in
+  if(i = 1) then [Object [("n", Num 1.0); ("b", True)]]
+  else [Object [("n", Num ifloat); ("b", True)]]@recurse_for_silly_json(i-1)
+
 (* 1 *)
 let make_silly_json i =
-  failwith "Need to implement: make_silly_json"
+  Array (recurse_for_silly_json(i))
 
 (* 2 *)
 let rec concat_with (sep, ss) =
-  failwith "Need to implement: concat_with"
+  match ss with
+    [] -> ""
+    | hd::tl -> if(tl = []) then hd else hd ^ sep ^ concat_with (sep, tl)
 
 (* 3 *)
 let quote_string s =
-  failwith "Need to implement: quote_string"
-
-
+  "\"" ^ s ^ "\""
+  
 (* 4 *)
 let rec string_of_json j =
   failwith "Need to implement: string_of_json"
 
 (* 5 *)
 let rec take (n,xs) = 
-  failwith "Need to implement: take"
+  match xs with
+    [] -> []
+    | hd::tl -> if(n = 1) then [hd] else [hd]@take(n-1, tl)
 
 (* 6 *)
 let rec firsts xs = 
-  failwith "Need to implement: firsts"
+  match xs with 
+    [] -> []
+    | hd::tl -> [fstpair(hd)]@firsts(tl)
 
 (* 7 *)
-(* write your comment here *)
+(*
+Suppose xs has type (int * int) list, and let n be an integer between 0 and the length of xs (inclusive),
+and consider the expressions firsts (take (n, xs)) and take (n, firsts xs). Either (1) write one
+sentence explaining in informal but precise English why these two expressions always evaluate to the
+same value; or (2) give example values of xs and n such that the two expressions evaluate to different
+values. Regardless of whether you decide option (1) or option (2) is correct, also write one sentence
+explaining which of the two expressions above might be faster to evaluate and why.
+
+These will always return the same value because let us say we have an integer n and a list of pairs xs.
+If we call firsts(take(n, xs)) we will get firsts of the first n pairs in xs, which will in turn give us 
+the first n first-components in xs.
+If we call take(n, firsts(xs)) weill get take of n, the first-components of xs. This will then give us
+the first n first-components in xs, which is the same as we saw of firsts(take(n, xs)).
+Since the order is preserved for both take and firsts, we will always get the same result.
+
+*)
 
 (* 8 *)
 let rec assoc (k, xs) =
-  failwith "Need to implement: assoc"
+  match xs with
+    [] -> None 
+    | hd::tl -> if(fstpair(hd) = k) then Some(sndpair(hd)) else assoc(k, tl)
 
 (* 9 *)
 let dot (j, f) = 
+  
   failwith "Need to implement: dot"
 
 (* 10 *)

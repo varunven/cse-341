@@ -27,19 +27,19 @@ open Json
     [Object [("n", Num 2.); ("b", True)]; 
      Object [("n", Num 1.); ("b", True)]]
 
-(** let test2 = concat_with (";", ["1"; "2"]) = "1;2" **)
+let test2 = concat_with (";", ["1"; "2"]) = "1;2"
 
-(** let test3 = quote_string "hello" = "\"hello\"" **)
+ let test3 = quote_string "hello" = "\"hello\""
 
 (** let test4 = string_of_json json_obj = "{\"foo\" : 3.14159, \"bar\" : [1, \"world\", null], \"ok\" : true}" **)
 
-(** let test5 = take (2, [4; 5; 6; 7]) = [4; 5] **)
+let test5 = take (2, [4; 5; 6; 7]) = [4; 5]
 
-(** let test6 = firsts [(1,2); (3,4)] = [1; 3] **)
+let test6 = firsts [(1,2); (3,4)] = [1; 3]
 
 (** don't forget to write a comment for problem 7 **)
 
-(** let test8 = assoc ("foo", [("bar",17);("foo",19)]) = Some 19 **)
+let test8 = assoc ("foo", [("bar",17);("foo",19)]) = Some 19
 
 (** let test9 = dot (json_obj, "ok") = Some True **)
 

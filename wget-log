@@ -1,0 +1,19 @@
+--2022-01-17 15:36:47--  https://drive.google.com/file/d/10NgAYb6qFbqFwNkGpvr2LqZFIuLoepRx
+Resolving drive.google.com (drive.google.com)... 142.251.33.78, 2607:f8b0:400a:805::200e
+Connecting to drive.google.com (drive.google.com)|142.251.33.78|:443... connected.
+HTTP request sent, awaiting response... 302 Moved Temporarily
+Location: https://drive.google.com/file/d/10NgAYb6qFbqFwNkGpvr2LqZFIuLoepRx/ [following]
+--2022-01-17 15:36:47--  https://drive.google.com/file/d/10NgAYb6qFbqFwNkGpvr2LqZFIuLoepRx/
+Reusing existing connection to drive.google.com:443.
+HTTP request sent, awaiting response... 302 Moved Temporarily
+Location: https://drive.google.com/file/d/10NgAYb6qFbqFwNkGpvr2LqZFIuLoepRx/edit [following]
+--2022-01-17 15:36:47--  https://drive.google.com/file/d/10NgAYb6qFbqFwNkGpvr2LqZFIuLoepRx/edit
+Reusing existing connection to drive.google.com:443.
+HTTP request sent, awaiting response... 200 OK
+Length: unspecified [text/html]
+Saving to: ‘10NgAYb6qFbqFwNkGpvr2LqZFIuLoepRx’
+
+10NgAYb6qFbqFwNkGpvr2LqZFIuLo     [<=>                                               ]       0  --.-KB/s               10NgAYb6qFbqFwNkGpvr2LqZFIuLo     [ <=>                                              ]  62.02K  --.-KB/s    in 0.04s   
+
+2022-01-17 15:36:47 (1.36 MB/s) - ‘10NgAYb6qFbqFwNkGpvr2LqZFIuLoepRx’ saved [63508]
+
