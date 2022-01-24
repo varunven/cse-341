@@ -15,12 +15,12 @@ open Json
  *   4. Add more test scenarios
  *   5. Run `dune test` to build and run your tests.
  * If working correctly, `dune test` will complete with no error messages
- *)
+*)
 
 (* We leave the first test uncommented to get you started. Until make_silly_json
  * gets implemented, calling `dune test` or `#use "hw2test.ml"` from dune utop 
  * will print a Failure message: *)
- let test1 = 
+let test1 = 
   make_silly_json 2 
   = 
   Array
@@ -29,7 +29,7 @@ open Json
 
 let test2 = concat_with (";", ["1"; "2"]) = "1;2"
 
- let test3 = quote_string "hello" = "\"hello\""
+let test3 = quote_string "hello" = "\"hello\""
 
 let test4 = string_of_json json_obj = "{\"foo\" : 3.14159, \"bar\" : [1, \"world\", null], \"ok\" : true}"
 
@@ -58,11 +58,11 @@ let nest = Array [Object [];
                   Object []]
 let test13 = not (recursive_no_field_repeats nest)
 let nest2 = Array [Object [];
-                  Object[("a",True);
-                         ("b",Object[("foo",True);
-                                     ("boo",True)]);
-                         ("c",True)];
-                  Object []]
+                   Object[("a",True);
+                          ("b",Object[("foo",True);
+                                      ("boo",True)]);
+                          ("c",True)];
+                   Object []]
 let test13b = not (recursive_no_field_repeats nest2)
 (* Any order is allowed by the specification, so it's ok to fail this test because of a different order. 
    You can edit this test to match your implementation's order. *)
@@ -70,24 +70,24 @@ let test14a = count_occurrences (["a"; "a"; "b"], (Failure "")) = [("b",1);("a",
 let test14b = count_occurrences (["a"; "a"; "b"], (Failure ""))
 (* test to see that an exception is thrown when the input list is not sorted *)
 let test14c = try count_occurrences (["b"; "a"; "b"], (Failure "")) = []
-              with Failure _ -> true
+  with Failure _ -> true
 
 let test15 = string_values_for_access_path (["x"; "y"], [Object [("a", True);("x", Object [("y", String "foo")])];
-                                                             Object [("x", Object [("y", String "bar")]); ("b", True)]])
-            = ["foo";"bar"]
+                                                         Object [("x", Object [("y", String "bar")]); ("b", True)]])
+             = ["foo";"bar"]
 
 let test16 = filter_access_path_value (["x"; "y"], "foo", [Object [("x", Object [("y", String "foo")]); ("z", String "bar")];
-                                            Object [("x", Object [("y", String "foo")]); ("z", String "baz")];
-                                            Object [("x", String "a")];
-                                            Object []])
+                                                           Object [("x", Object [("y", String "foo")]); ("z", String "baz")];
+                                                           Object [("x", String "a")];
+                                                           Object []])
              = 
              [Object [("x", Object [("y", String "foo")]); ("z", String "bar")];
               Object [("x", Object [("y", String "foo")]); ("z", String "baz")]]
 
 let test16a = filter_access_path_value (["x"; "y"], "foo", [Object [("x", Object [("y", String "foo")]); ("z", String "bar")];
-                                            Object [("x", Object [("y", String "foo")]); ("z", String "baz")];
-                                            Object [("x", String "a")];
-                                            Object []])
+                                                            Object [("x", Object [("y", String "foo")]); ("z", String "baz")];
+                                                            Object [("x", String "a")];
+                                                            Object []])
 
 let pgascse =
   { latitude = 47.653221;
@@ -103,6 +103,14 @@ let test19 = filter_access_path_in_rect (["x"; "y"], u_district, [Object [("x", 
              = [Object [("x", Object [("y", json_pgascse)])]]
 
 let test19a = filter_access_path_in_rect (["x"; "y"], u_district, [Object [("x", Object [("y", json_pgascse)])]; Object []])
+
+let test20 = route_histogram
+
+let test21 = top_three_routes
+let test22 = buses_in_ud
+let test23 = ud_route_histogram
+let test24 = top_three_ud_routes
+let test25 = all_fourty_fours 
 
 (* Challenge problems *)
 

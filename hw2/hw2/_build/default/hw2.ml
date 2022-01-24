@@ -25,14 +25,14 @@ let sort xs = List.sort compare xs
 (* OCaml's string_of_float is not quite RFC compliant due to its tendency
    to output whole numbers with trailing decimal points without a zero.
    But, printf does the job how we want. *)
-  
+
 let json_string_of_float f =
   Printf.sprintf "%g" f
 
 let some_to_item (item) =
-    match item with
-    | Some (x) -> x
-    | None -> raise (Invalid_argument "Option.get")
+  match item with
+  | Some (x) -> x
+  | None -> raise (Invalid_argument "Option.get")
 ;;
 
 let rec recurse_for_silly_json(i : int) = 
@@ -48,43 +48,43 @@ let make_silly_json i =
 let rec concat_with (sep, ss) =
   match ss with
     [] -> ""
-    | hd::tl -> if(tl = []) then hd else hd ^ sep ^ concat_with (sep, tl)
+  | hd::tl -> if(tl = []) then hd else hd ^ sep ^ concat_with (sep, tl)
 
 (* 3 *)
 let quote_string s =
   "\"" ^ s ^ "\""
 
 let rec mult_to_single_json (lambda : ('a -> 'b)) (items : 'a list) : ('b list) =
-    match items with
-    | [] -> []
-    | (hd :: tl) -> (lambda hd) :: (mult_to_single_json lambda tl)
+  match items with
+  | [] -> []
+  | (hd :: tl) -> (lambda hd) :: (mult_to_single_json lambda tl)
 
 (* 4 *)
 let rec string_of_json j =
   let rec string_of_jsonobj (key_val) =
-      match key_val with
-      | (key, value) -> (quote_string(key))^" : "^(string_of_json(value))
+    match key_val with
+    | (key, value) -> (quote_string(key))^" : "^(string_of_json(value))
   in
   match j with
     Num num -> json_string_of_float(num)
-    | String str -> quote_string(str)
-    | False -> "false"
-    | True -> "true"
-    | Null -> "null"
-    | Array (json) -> "["^concat_with(", ", mult_to_single_json(string_of_json)(json))^"]"
-    | Object (json) -> "{"^concat_with(", ", mult_to_single_json(string_of_jsonobj)(json))^"}"
+  | String str -> quote_string(str)
+  | False -> "false"
+  | True -> "true"
+  | Null -> "null"
+  | Array (json) -> "["^concat_with(", ", mult_to_single_json(string_of_json)(json))^"]"
+  | Object (json) -> "{"^concat_with(", ", mult_to_single_json(string_of_jsonobj)(json))^"}"
 
 (* 5 *)
 let rec take (n,xs) = 
   match xs with
     [] -> []
-    | hd::tl -> if(n = 1) then [hd] else [hd]@take(n-1, tl)
+  | hd::tl -> if(n = 1) then [hd] else [hd]@take(n-1, tl)
 
 (* 6 *)
 let rec firsts xs = 
   match xs with 
     [] -> []
-    | (k,v)::tl -> [k]@firsts(tl)
+  | (k,v)::tl -> [k]@firsts(tl)
 
 (* 7 *)
 (*
@@ -108,31 +108,31 @@ Since the order is preserved for both take and firsts, we will always get the sa
 let rec assoc (k, xs) =
   match xs with
     [] -> None 
-    | (key,v)::tl -> if(key = k) then Some(v) else assoc(k, tl)
+  | (key,v)::tl -> if(key = k) then Some(v) else assoc(k, tl)
 
 (* 9 *)
 let dot (j, f) = 
   match j with
     Object(j) -> assoc(f, j)
-    | _ -> None
-  
+  | _ -> None
+
 (* 10 *)
 let rec dots (j, fs) =
   match fs with 
     [] -> None
-    | hd :: [] -> dot(j, hd)
-    | (hd::tl) -> if(dot(j, hd) = None) then None else dots(some_to_item(dot(j, hd)), tl)
+  | hd :: [] -> dot(j, hd)
+  | (hd::tl) -> if(dot(j, hd) = None) then None else dots(some_to_item(dot(j, hd)), tl)
 
 (* 11 *)
 let one_fields j =
   let rec tail_recurse_for_fields(j, keys) = 
     match j with
       [] -> keys
-      | (k,v)::tl -> tail_recurse_for_fields(tl, k::keys)
+    | (k,v)::tl -> tail_recurse_for_fields(tl, k::keys)
   in
   match j with
     Object(j) -> tail_recurse_for_fields(j, [])
-    | _ -> []
+  | _ -> []
 
 (* 12 *)
 let no_repeats xs = 
@@ -143,7 +143,7 @@ let rec recursive_no_field_repeats j =
   let rec process_json_arr(arr) = 
     match arr with 
       [] -> []
-      | hd::tl -> hd@process_json_arr(tl)
+    | hd::tl -> hd@process_json_arr(tl)
   in
   let rec allkeys(j) = 
     match j with
@@ -159,29 +159,30 @@ let rec count_occur(xs, count, e) =
   | [] -> []
   | h::[] -> [(h, count+1)]
   | h::h2::t -> if(h>h2) then raise(e)
-      else 
-        if (h = h2) then count_occur(h2::t, count+1, e)
-        else [(h, count+1)]@count_occur(h2::t, 0, e)
+    else 
+    if (h = h2) then count_occur(h2::t, count+1, e)
+    else [(h, count+1)]@count_occur(h2::t, 0, e)
 
 (* 14 *)
+(* TODO: should be string list * exn -> (string * int) list NOT a'list * exn -> ('a * int) list *)
 let count_occurrences (xs, e) =
   count_occur(xs, 0, e)
 
 (* 15 *)
 let string_list_from_val (j) =
-    match j with
-    | Some String (s) -> [ s ]
-    | _ -> []
+  match j with
+  | Some String (s) -> [ s ]
+  | _ -> []
 
 let rec string_values_for_access_path (fs, js) = 
   match js with 
     [] -> []
-    | hd::tl -> string_list_from_val(dots(hd, fs))@string_values_for_access_path(fs, tl)
+  | hd::tl -> string_list_from_val(dots(hd, fs))@string_values_for_access_path(fs, tl)
 
 let rec filter_access_path (fs, v, js) = 
   match js with 
     [] -> []
-    | hd::tl -> if(Some(String(v)) = dots(hd, fs) ) then [hd]@filter_access_path(fs, v, tl) else filter_access_path(fs, v, tl)
+  | hd::tl -> if(Some(String(v)) = dots(hd, fs) ) then [hd]@filter_access_path(fs, v, tl) else filter_access_path(fs, v, tl)
 
 (* 16 *)
 let rec filter_access_path_value (fs, v, js) = 
@@ -195,13 +196,13 @@ type point = { latitude: float; longitude: float }
 (* 17 *)
 let in_rect (r, p) = 
   if p.latitude > r.min_latitude && p.latitude < r.max_latitude 
-  && p.longitude > r.min_longitude && p.longitude < r.max_longitude then true
+     && p.longitude > r.min_longitude && p.longitude < r.max_longitude then true
   else false
 
 let jsonnum(j, f) =
-    match (dot (j, f)) with
-    | Some Num (num) -> (Some num)
-    | _ -> None
+  match (dot (j, f)) with
+  | Some Num (num) -> (Some num)
+  | _ -> None
 
 (* 18 *)
 let point_of_json j = 
@@ -213,16 +214,26 @@ let point_of_json j =
 let rec filter_access_path_rect (fs, r, js) = 
   match js with 
     [] -> []
-    | hd::tl -> if(dots(hd, fs) = None) then filter_access_path_rect(fs, r, tl)
-     else if(in_rect(r, some_to_item(point_of_json(some_to_item(dots(hd, fs))))) = false) then filter_access_path_rect(fs, r, tl)
-     else [hd]@filter_access_path_rect(fs, r, tl)
+  | hd::tl -> if(dots(hd, fs) = None) then filter_access_path_rect(fs, r, tl)
+    else if(in_rect(r, some_to_item(point_of_json(some_to_item(dots(hd, fs))))) = false) then filter_access_path_rect(fs, r, tl)
+    else [hd]@filter_access_path_rect(fs, r, tl)
 
 (* 19 *)
 let rec filter_access_path_in_rect (fs, r, js) = 
   filter_access_path_rect(fs, r, js)
 
 (* 20 *)
-(* write your comment here *)
+(* 
+Both functions do the same basis of filtering using a json, with the difference being that one has to
+compare the point object to if it fits in a given rectangle, but the other compare if the items are
+equal to a given value.
+
+We could create one common filtering function which accepts a flag to signify if we should be comparing
+values, or if we should be checking points and rectangles.
+
+On a scale of 1-10 I'm a solid 7 because I'm already on question 19 and only 80% of the way through 
+this assignment.
+ *)
 
 (* The definition of the U district for purposes of this assignment :) *)
 let u_district =
@@ -235,11 +246,10 @@ let u_district =
 (* For this section, we provide the definition of U district and the functions
  * to calculate a histogram. Use these to create the bindings as requested. 
  * But notice our implementation of histogram uses *your* definition of count_occurrences
- *)
- (* We provide this code commented out because it uses some of your functions 
-    that you haven't implemented yet *)
+*)
+(* We provide this code commented out because it uses some of your functions 
+   that you haven't implemented yet *)
 
-(*
 exception SortIsBroken
 
 (* Creates a histogram for the given list of strings. 
@@ -263,11 +273,9 @@ let complete_bus_positions_list =
   | Some (Array xs) -> xs
   | _ -> failwith "complete_bus_positions_list"
 
-*)
-exception Unimplemented
-let route_histogram     = Unimplemented
-let top_three_routes    = Unimplemented
-let buses_in_ud         = Unimplemented
-let ud_route_histogram  = Unimplemented
-let top_three_ud_routes = Unimplemented
-let all_fourty_fours    = Unimplemented
+let route_histogram = histogram_for_access_path(["vehicle"; "trip"; "route_num"], complete_bus_positions_list)
+let top_three_routes = take(3, firsts(route_histogram))
+let buses_in_ud = filter_access_path_in_rect(["vehicle"; "position"], u_district, complete_bus_positions_list)
+let ud_route_histogram = histogram_for_access_path(["vehicle"; "trip"; "route_num"], buses_in_ud)
+let top_three_ud_routes= take(3, firsts(ud_route_histogram))
+let all_fourty_fours = filter_access_path_value(["vehicle"; "trip"; "route_num"], "44", complete_bus_positions_list)
