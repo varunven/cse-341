@@ -1,0 +1,6 @@
+# dune build
+# OCAMLPARAM: unset
+# Workspace root: /mnt/c/Users/dswhi/CSE341Linux/cse-341-files
+$ /usr/bin/nproc > /tmp/duneac9f51.output 2> /dev/null
+# Auto-detected concurrency: 8
+# disable binary cache

@@ -29,8 +29,11 @@ let sort xs = List.sort compare xs
 let json_string_of_float f =
   Printf.sprintf "%g" f
 
-let fstpair(a, _) = a
-let sndpair(_, b) = b
+let some_to_item (item) =
+    match item with
+    | Some (x) -> x
+    | None -> raise (Invalid_argument "Option.get")
+;;
 
 let rec recurse_for_silly_json(i : int) = 
   let ifloat = float_of_int(i) in
@@ -50,10 +53,26 @@ let rec concat_with (sep, ss) =
 (* 3 *)
 let quote_string s =
   "\"" ^ s ^ "\""
-  
+
+let rec mult_to_single_json (lambda : ('a -> 'b)) (items : 'a list) : ('b list) =
+    match items with
+    | [] -> []
+    | (hd :: tl) -> (lambda hd) :: (mult_to_single_json lambda tl)
+
 (* 4 *)
 let rec string_of_json j =
-  failwith "Need to implement: string_of_json"
+  let rec string_of_jsonobj (key_val) =
+      match key_val with
+      | (key, value) -> (quote_string(key))^" : "^(string_of_json(value))
+  in
+  match j with
+    Num num -> json_string_of_float(num)
+    | String str -> quote_string(str)
+    | False -> "false"
+    | True -> "true"
+    | Null -> "null"
+    | Array (json) -> "["^concat_with(", ", mult_to_single_json(string_of_json)(json))^"]"
+    | Object (json) -> "{"^concat_with(", ", mult_to_single_json(string_of_jsonobj)(json))^"}"
 
 (* 5 *)
 let rec take (n,xs) = 
@@ -65,7 +84,7 @@ let rec take (n,xs) =
 let rec firsts xs = 
   match xs with 
     [] -> []
-    | hd::tl -> [fstpair(hd)]@firsts(tl)
+    | (k,v)::tl -> [k]@firsts(tl)
 
 (* 7 *)
 (*
@@ -89,40 +108,84 @@ Since the order is preserved for both take and firsts, we will always get the sa
 let rec assoc (k, xs) =
   match xs with
     [] -> None 
-    | hd::tl -> if(fstpair(hd) = k) then Some(sndpair(hd)) else assoc(k, tl)
+    | (key,v)::tl -> if(key = k) then Some(v) else assoc(k, tl)
 
 (* 9 *)
 let dot (j, f) = 
-
-  failwith "Need to implement: dot"
-
+  match j with
+    Object(j) -> assoc(f, j)
+    | _ -> None
+  
 (* 10 *)
 let rec dots (j, fs) =
-  failwith "Need to implement: dots"
+  match fs with 
+    [] -> None
+    | hd :: [] -> dot(j, hd)
+    | (hd::tl) -> if(dot(j, hd) = None) then None else dots(some_to_item(dot(j, hd)), tl)
 
 (* 11 *)
 let one_fields j =
-  failwith "Need to implement: one_fields"
+  let rec tail_recurse_for_fields(j, keys) = 
+    match j with
+      [] -> keys
+      | (k,v)::tl -> tail_recurse_for_fields(tl, k::keys)
+  in
+  match j with
+    Object(j) -> tail_recurse_for_fields(j, [])
+    | _ -> []
 
 (* 12 *)
 let no_repeats xs = 
-  failwith "Need to implement: no_repeats"
+  if(List.length xs = List.length(dedup(xs))) then true else false
 
 (* 13 *)
-let rec recursive_no_field_repeats j = 
-  failwith "Need to implement: recursive_no_field_repeats"
+let rec recursive_no_field_repeats j =
+  let rec process_json_arr(arr) = 
+    match arr with 
+      [] -> []
+      | hd::tl -> hd@process_json_arr(tl)
+  in
+  let rec allkeys(j) = 
+    match j with
+    | Object [] -> []
+    | Object ((k, v)::tl) -> [k]@allkeys(v)@allkeys((Object tl))
+    | Array (sub_objs) -> (process_json_arr (mult_to_single_json allkeys sub_objs))
+    | _ -> []
+  in
+  no_repeats(allkeys(j))
+
+let rec count_occur(xs, count, e) = 
+  match xs with
+  | [] -> []
+  | h::[] -> [(h, count+1)]
+  | h::h2::t -> if(h>h2) then raise(e)
+      else 
+        if (h = h2) then count_occur(h2::t, count+1, e)
+        else [(h, count+1)]@count_occur(h2::t, 0, e)
 
 (* 14 *)
 let count_occurrences (xs, e) =
-  failwith "Need to implement: count_occurrences"
+  count_occur(xs, 0, e)
 
 (* 15 *)
+let string_list_from_val (j) =
+    match j with
+    | Some String (s) -> [ s ]
+    | _ -> []
+
 let rec string_values_for_access_path (fs, js) = 
-  failwith "Need to implement: string_values_for_access_path"
+  match js with 
+    [] -> []
+    | hd::tl -> string_list_from_val(dots(hd, fs))@string_values_for_access_path(fs, tl)
+
+let rec filter_access_path (fs, v, js) = 
+  match js with 
+    [] -> []
+    | hd::tl -> if(Some(String(v)) = dots(hd, fs) ) then [hd]@filter_access_path(fs, v, tl) else filter_access_path(fs, v, tl)
 
 (* 16 *)
 let rec filter_access_path_value (fs, v, js) = 
-  failwith "Need to implement: filter_access_path_value"
+  filter_access_path(fs, v, js)
 
 (* Types for use in problems 17-20. *)
 type rect = { min_latitude: float; max_latitude: float;
@@ -131,18 +194,43 @@ type point = { latitude: float; longitude: float }
 
 (* 17 *)
 let in_rect (r, p) = 
-  failwith "Need to implement: in_rect"
+  if p.latitude > r.min_latitude && p.latitude < r.max_latitude 
+  && p.longitude > r.min_longitude && p.longitude < r.max_longitude then true
+  else false
+
+let jsonnum(j, f) =
+    match (dot (j, f)) with
+    | Some Num (num) -> (Some num)
+    | _ -> None
 
 (* 18 *)
 let point_of_json j = 
-  failwith "Need to implement: point_of_json"
+  let lat = jsonnum(j, "latitude") in 
+  let long = jsonnum(j, "longitude") in 
+  if (lat = None || long = None) then None 
+  else Some { latitude = some_to_item(lat); longitude = some_to_item(long)}
+
+let rec filter_access_path_rect (fs, r, js) = 
+  match js with 
+    [] -> []
+    | hd::tl -> if(dots(hd, fs) = None) then filter_access_path_rect(fs, r, tl)
+     else if(in_rect(r, some_to_item(point_of_json(some_to_item(dots(hd, fs))))) = false) then filter_access_path_rect(fs, r, tl)
+     else [hd]@filter_access_path_rect(fs, r, tl)
 
 (* 19 *)
 let rec filter_access_path_in_rect (fs, r, js) = 
-  failwith "Need to implement: filter_access_path_in_rect"
+  filter_access_path_rect(fs, r, js)
 
 (* 20 *)
 (* write your comment here *)
+
+(* The definition of the U district for purposes of this assignment :) *)
+let u_district =
+  { min_latitude  =  47.648637;
+    min_longitude = -122.322099;
+    max_latitude  =  47.661176;
+    max_longitude = -122.301019
+  }
 
 (* For this section, we provide the definition of U district and the functions
  * to calculate a histogram. Use these to create the bindings as requested. 
@@ -153,14 +241,6 @@ let rec filter_access_path_in_rect (fs, r, js) =
 
 (*
 exception SortIsBroken
-
-(* The definition of the U district for purposes of this assignment :) *)
-let u_district =
-  { min_latitude  =  47.648637;
-    min_longitude = -122.322099;
-    max_latitude  =  47.661176;
-    max_longitude = -122.301019
-  }
 
 (* Creates a histogram for the given list of strings. 
  * Returns a tuple in which the first element is

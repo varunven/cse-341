@@ -1,10 +1,10 @@
 # dune utop
 # OCAMLPARAM: unset
 # Workspace root: /mnt/c/Users/dswhi/CSE341Linux/cse-341-files/hw2/hw2
-$ /usr/bin/nproc > /tmp/dune221e8a.output 2> /dev/null
+$ /usr/bin/nproc > /tmp/duneebc956.output 2> /dev/null
 # Auto-detected concurrency: 8
 # disable binary cache
-$ /usr/bin/ocamlc.opt -config > /tmp/dune85b41f.output
+$ /usr/bin/ocamlc.opt -config > /tmp/dune82e0ca.output
 # Dune context:
 #  { name = "default"
 #  ; kind = "default"
