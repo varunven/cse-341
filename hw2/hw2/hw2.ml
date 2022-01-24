@@ -32,8 +32,7 @@ let json_string_of_float f =
 let some_to_item (item) =
   match item with
   | Some (x) -> x
-  | None -> raise (Invalid_argument "Option.get")
-;;
+  | None -> raise (Invalid_argument "Not a some")
 
 let rec recurse_for_silly_json(i : int) = 
   let ifloat = float_of_int(i) in
