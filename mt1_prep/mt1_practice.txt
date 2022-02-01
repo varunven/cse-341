@@ -1,0 +1,19 @@
+cse 341 practice sp 21 midterm
+
+1) yep
+
+2a) let example_no_breakouts = 
+	let dan = ("Dan" * false * false) in 
+	let ken = ("Kenny" * true * true) in 
+	let abdul = ("Abdul" * true * true) in
+	Room [dan, ken, abdul]
+2b) let example_full_breakouts = 
+	let dan = ("Dan" * false * false) in 
+	let ken = ("Kenny" * true * true) in 
+	let abdul = ("Abdul" * true * true) in
+	Breakouts[Room[dan]; Room[ken]; Room[abdul]]
+	
+3a) mystery1 computes the total number of people there are in all of the nested rooms in the breakout room passed in using tail recursion
+3b) mystery2 returns a head-recursive list of every room in the nested breakouts
+
+4) refer to mt1_practice.ml for code
