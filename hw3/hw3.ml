@@ -120,6 +120,5 @@ let first_match v pats =
   | NoAnswer -> None
   | _ -> assert(false)
 
-(* optional challenge problem  *)
-
-let typecheck_patterns cons pats = "This is optional"
+(* optional challenge problem  - will not pass unless I give a valid return type*)
+let typecheck_patterns cons pats = Some (AnythingT) 

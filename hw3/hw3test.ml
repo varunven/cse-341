@@ -80,4 +80,4 @@ let first_match_test =
 
 (* optional challenge problem  *)
 
-let typecheck_patterns_test = "Did not implement"
+let typecheck_patterns_test = typecheck_patterns
