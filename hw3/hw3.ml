@@ -98,16 +98,16 @@ let check_pat pat =
 (* #11 *)
 let rec matches v pat = 
     match v, pat with
-    | Constructor(vk, vva), ConstructorP(pk, pva) ->
-            if vk == pk then (matches vva pva) else None
-    | Tuple (va), TupleP(pa) ->
-            if (List.length va) != (List.length pa) then
+    | Constructor(ka, va), ConstructorP(kb, vb) ->
+            if ka = kb then (matches va vb) else None
+    | Tuple (ta), TupleP(tb) ->
+            if (List.length ta) != (List.length tb) then
                 None
             else
-                (all_answers (fun (v, p) -> (matches v p)) (List.combine va pa))
+                (all_answers (fun (v, p) -> (matches v p)) (List.combine ta tb))
     | Constant(v), ConstantP(p) -> if v = p then Some [] else None
-    | Constant(v), VariableP(k) -> Some [(k, v)]
-    | Unit, VariableP(k) -> Some []
+    | Constant(v_value), VariableP(key) -> Some [(key, v)]
+    | Unit, VariableP(key) -> Some [(key, Unit)]
     | Unit, UnitP -> Some []
     | _, WildcardP -> Some []
     | _, _ -> None
@@ -122,5 +122,4 @@ let first_match v pats =
 
 (* optional challenge problem  *)
 
-let typecheck_patterns cons pats = 
-  failwith "Need to implement typecheck_patterns"
+let typecheck_patterns cons pats = "This is optional"

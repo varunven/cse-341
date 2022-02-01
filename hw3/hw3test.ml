@@ -71,7 +71,7 @@ let check_pat_test =
 let rec matches_test = 
     (matches 
         ( Tuple [(Constant 1); Unit] )
-        ( TupleP [(VariableP "foo"); UnitP] )) = Some [("foo", 1)]
+        ( TupleP [(VariableP "foo"); UnitP] )) = Some [("foo", Constant 1)]
 
 (* #12 *)
 let first_match_test = 
@@ -80,5 +80,4 @@ let first_match_test =
 
 (* optional challenge problem  *)
 
-let typecheck_patterns cons pats = 
-  failwith "Need to implement typecheck_patterns"
+let typecheck_patterns_test = "Did not implement"
