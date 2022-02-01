@@ -79,7 +79,7 @@ let count_wild_and_variable_lengths =
   g (fun () -> 1) (fun str -> (String.length str))
 
 let count_a_var s = 
-  g (fun () -> 0) (fun str -> if str == s then 1 else 0)
+  g (fun () -> 0) (fun str -> if str = s then 1 else 0)
 
 (* #10 *)
 let check_pat pat = 
