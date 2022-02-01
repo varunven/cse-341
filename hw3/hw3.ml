@@ -1,7 +1,6 @@
 (* NOTE: Uncomment the following line if you want to #use this file in utop
  * (optionally, call it from utop directly): *)
-(* #mod_use "hw3types.ml";; *)
-
+#mod_use "hw3types.ml";;
 
 (* NOTE: to get rid off the red-wiggles in VSCode, first compile the
  * the hw3types module running this 
@@ -14,63 +13,112 @@ open Hw3types
 
 (* #1 *)
 let only_lowercase =
-  failwith "Need to implement only_lowercase"
+  List.filter (fun str -> str.[0] == Char.lowercase_ascii(str.[0]))
 
 (* #2 *)
 let longest_string1 =
-  failwith "Need to implement longest_string1"
+  List.fold_left (fun x y -> if(String.length(x) >= String.length(y)) then x else y) ""
 
 (* #3 *)
 let longest_string2 =
-  failwith "Need to implement longest_string2"
+  List.fold_left (fun x y -> if(String.length(x) > String.length(y)) then x else y) ""
 
 (* #4 *)
 let longest_string_helper f =
-  failwith "Need to implement longest_string_helper"
+    List.fold_left (fun x y -> if (f (String.length x) (String.length y)) then x else y) ""
 
-let longest_string3 =
-  failwith "Need to implement longest_string3"
+let longest_string3 = longest_string_helper (>=)
 
-let longest_string4 =
-    failwith "Need to implement longest_string4"
+let longest_string4 = longest_string_helper (>)
   
 (* #5 *)
-let longest_lowercase =
-  failwith "Need to implement longest_lowercase"
+let longest_lowercase = longest_string1%only_lowercase
 
 (* #6 *)
-let caps_no_X_string =
-  failwith "Need to implement caps_no_X_string"
+let caps_no_X_string = (String.concat "") % (String.split_on_char 'X') % String.uppercase_ascii
 
 (* #7 *)
+let option_is_valid item = 
+  match item with 
+    Some(item) -> true
+    | _ -> false
+
+let option_get item = 
+  match item with 
+    Some(item) -> item
+    | _ -> assert(false)
+  
 let rec first_answer f xs = 
-  failwith "Need to implement first_answer"
+  match (List.map f xs) |> List.filter (option_is_valid) with
+  | hd :: tl -> (option_get hd)
+  | [] -> raise NoAnswer
 
 (* #8 *)
 let all_answers f xs = 
-  failwith "Need to implement all_answers"
+    List.fold_left
+        (fun x y ->
+            if (option_is_valid y) && (option_is_valid x) then
+                (Some ((option_get x) @ (option_get y)))
+            else
+                None
+        )
+        (Some [])
+        (List.map f xs)
 
 (* #9 *)
+(*
+  count_wildcards accepts two functions, f1 and f2, and a pattern p
+  It returns the nested loop of applying the pattern to both f1 and f2
+  If p contains another pattern within it, that is also applied to the same two functions... 
+  ...and added to the result
+*)
 let count_wildcards =
-  failwith "Need to implement count_wildcards"
+   g (fun () -> 1) (fun _ -> 0)
 
 let count_wild_and_variable_lengths =
-  failwith "Need to implement count_wild_and_variable_lengths"
+  g (fun () -> 1) (fun str -> (String.length str))
 
 let count_a_var s = 
-  failwith "Need to implement count_a_var"
+  g (fun () -> 0) (fun str -> if str == s then 1 else 0)
 
 (* #10 *)
 let check_pat pat = 
-  failwith "Need to implement check_pat"
+    let rec get_vars (p : pattern) (vs : string list) =
+        match p with
+        | ConstructorP(v, p) -> (get_vars p (v :: vs))
+        | TupleP (ps) -> List.fold_left (fun a b -> (a @ (get_vars b []))) vs ps
+        | _ -> vs
+    in
+    let no_repeats (xs) =
+        (List.length xs) = (List.length (List.sort_uniq compare xs))
+    in
+    let vars = (get_vars pat []) in
+    (no_repeats vars)
 
 (* #11 *)
 let rec matches v pat = 
-  failwith "Need to implement matches"
+    match v, pat with
+    | Constructor(vk, vva), ConstructorP(pk, pva) ->
+            if vk == pk then (matches vva pva) else None
+    | Tuple (va), TupleP(pa) ->
+            if (List.length va) != (List.length pa) then
+                None
+            else
+                (all_answers (fun (v, p) -> (matches v p)) (List.combine va pa))
+    | Constant(v), ConstantP(p) -> if v = p then Some [] else None
+    | Constant(v), VariableP(k) -> Some [(k, v)]
+    | Unit, VariableP(k) -> Some []
+    | Unit, UnitP -> Some []
+    | _, WildcardP -> Some []
+    | _, _ -> None
 
 (* #12 *)
 let first_match v pats = 
-  failwith "Need to implement first_match"
+  try
+      Some (first_answer (fun p -> (matches v p)) pats)
+  with
+  | NoAnswer -> None
+  | _ -> assert(false)
 
 (* optional challenge problem  *)
 
