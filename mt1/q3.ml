@@ -46,4 +46,7 @@ let rec make_no_all_empty_nodes fs =
                 | One s' -> Node(one, two)
                 | Node(fs1a, fs1b) -> Node(one, two)
 
+let tree = Node(Node(Node(One("a"), One("b")), One("c")), Node(One("d"), One("e")))
+
 let ex_emp = make_no_all_empty_nodes example
+let ex_emp = (make_no_all_empty_nodes tree) = tree

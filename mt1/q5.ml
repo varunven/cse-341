@@ -26,7 +26,7 @@ They are not approximately equivalent because one is a head-recursive function w
 For example, if the list passed in was ["a";"b"], then tree_of_list would return Node (One "a", Node (One "b", Empty)), but tree_of_list2 would return Node (One "b", Node (One "a", Empty))
  *)
 
-(* 5.3:  *)
+(* 5.3: 
 
 let rec list_of_tree fs = 
     match fs with 
@@ -41,3 +41,4 @@ let tree = Node(Node(Node(Node(One("a"), One("b")), One("c")), Node(One("d"), On
 
 let z = tree_of_list(list_of_tree tree)
 let a = tree_of_list2(list_of_tree tree)
+ *)
