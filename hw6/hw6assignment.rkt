@@ -24,7 +24,6 @@
 
     (define/augment (on-char event)
       (define keycode (send event get-key-code))
-      (displayln keycode)
       (match keycode
         [#\u (begin
                (send board rotate-clockwise)
@@ -46,6 +45,7 @@
     (inherit remove-filled)
 
     (define/public (set-is-cheating! flag) (set! is-cheating flag))
+    (define/public (get-is-cheating) is-cheating)
 
     (define/public (cheat) 
       (let ([flag (and is-cheating (>= (send this get-score) 100))])
@@ -61,13 +61,16 @@
           (vector-append all-shapes
             (vector
               (vector (vector '(0 . 0) '(-1 . 0) '(1 . 0) '(2 . 0) '(-2 . 0))
-                      (vector '(0 . 0) '(0 . -1) '(0 . 1) '(0 . 2) '(0 . -2)))     ; OOOOO
+                      (vector '(0 . 0) '(0 . -1) '(0 . 1) '(0 . 2) '(0 . -2)))
+              ; OOOOO
 
-              (rotations (vector '(0 . 0) '(-1 . 0) '(1 . 0) '(0 . 1) '(-1 . 1)))  ; OO
-                                                                                   ; OOO
+              (rotations (vector '(0 . 0) '(-1 . 0) '(1 . 0) '(0 . 1) '(-1 . 1)))
+              ; OO
+              ; OOO
                                                                                    
-              (rotations (vector '(0 . 0) '(1 . 0) '(0 . 1)))                      ; O
-                                                                                   ; OO
+              (rotations (vector '(0 . 0) '(1 . 0) '(0 . 1)))
+              ; O
+              ; OO
           )))))
 
      (define/override (store-current)

@@ -1,0 +1,15 @@
+#lang racket
+
+(require "hw6provided.rkt")
+(require "hw6assignment.rkt")
+
+(new my-tetris%)
+
+  (match (mode)
+    ['original (new tetris%)]
+    ['enhanced (new my-tetris%)]
+    ; Uncomment this line if you do the challenge problem
+    #;['challenge (new my-tetris-challenge%)]))
+
+(module* main #f
+  (define the-game (top-level)))
