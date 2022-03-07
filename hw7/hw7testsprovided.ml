@@ -8,6 +8,8 @@
 (* Note these tests compare floats for equality which is generally a bad idea but makes sense
    when tests expect a particular answer *)
 
+ #mod_use "hw7.ml";; 
+
 (* Preprocess tests *)
 let _ = if preprocess_prog (LineSegment (3.2,4.1,3.2,4.1)) = Point (3.2,4.1)
         then print_string "preprocess converts a LineSegment to a Point successfully\n"

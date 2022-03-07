@@ -17,6 +17,7 @@ type geom_exp =
   | Intersect of geom_exp * geom_exp (* intersection expression *)
   | Let of string * geom_exp * geom_exp (* let s = e1 in e2 *)
   | Var of string
+  | Shift of float * float * geom_exp (* floatX, floatY, subexpression *)
 (* CHANGE add shifts for expressions of the form Shift(deltaX, deltaY, exp) *)
 
 exception BadProgram of string
@@ -152,7 +153,30 @@ let rec eval_prog e env =
                | Some (_,v) -> v)
   | Let(s,e1,e2) -> eval_prog e2 ((s, eval_prog e1 env) :: env)
   | Intersect(e1,e2) -> intersect (eval_prog e1 env) (eval_prog e2 env)
-    (* add a case for shift expression *)
-(* CHANGE: Add a branch for Shift expressions *)
+  (* CHANGE: Add a branch for Shift expressions *)
+  | Shift(dx, dy, geom_exp) -> (* add a case for shift expression *)
+    match geom_exp with 
+        | NoPoints -> NoPoints
+        | Point(x, y) -> Point(x+dx, y+dy)
+        | Line (m, b) -> Line(m, b+dy-m*dx)
+        | VerticalLine (x) -> VerticalLine(x+dx)
+        | LineSegment (x1, y1, x2, y2) -> LineSegment(x1+dx, y1+dy, x2+dx, y2+dy)
+        | _ -> eval_prog Shift(dx, dy, eval_prog geom_exp env) env
+    
+let min_max a b =
+  if(a <= b) then a b
+  else b a
 
 (* CHANGE: Add function preprocess_prog of type geom_exp -> geom_exp *)
+let rec preprocess_prog e = 
+  match e with 
+    | LineSegment (x1, y1, x2, y2) -> 
+      let xs = min_max x1 x2 in
+      let ys = min_max y1 y2 in
+      if(float_close_point x1 y1 x2 y2) then Point(x1 y1)
+      else if(float_close x1 x2) then LineSegment (x1, fst(ys), x2, snd(ys)) 
+      else LineSegment (fst(xs), y1, snd(xs), y2)
+    | Intersect (e1, e2) -> Intersect(preprocess_prog(e1), preprocess_prog(e2))
+    | Let (s, e1, e2) -> Let(s, preprocess_prog(e1), preprocess_prog(e2))
+    | Shift (f1, f2, e) -> Shift(f1, f2, preprocess_prog(e))
+    | _ -> e
