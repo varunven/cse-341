@@ -19,6 +19,10 @@ let _ = if preprocess_prog (LineSegment(-3.2,-4.1,3.2,4.1)) = LineSegment(3.2,4.
         then print_string "preprocess flips an improper LineSegment successfully\n"
         else print_string "preprocess does not flip an improper LineSegment successfully\n"
 
+let _ = if preprocess_prog (Shift(0.5, 0.3, LineSegment(-3.2,-4.1,3.2,4.1))) = Shift(0.5, 0.3, LineSegment(3.2,4.1,-3.2,-4.1))
+        then print_string "preprocess flips an improper LineSegment successfully\n"
+        else print_string "preprocess does not flip an improper LineSegment successfully\n"
+
 (* eval_prog tests *)
 
 let run_prog e = eval_prog (preprocess_prog e) []
@@ -39,6 +43,22 @@ let _ = do_test "using a variable"
 let _ = do_test "using a shadowing variable"
                 (Let ("a", Point (1.0,1.0), Let ("a", Point (4.0,4.0), Shift (3.0,4.0,Var "a")))) 
                 (Point (7.0,8.0)) 
+
+let _ = do_test "eval_prog: no points"
+                (NoPoints)
+                (NoPoints)
+                
+let _ = do_test "eval_prog: point"
+                (Point(3.0, 2.3))
+                (Point(3.0, 2.3))
+
+let _ = do_test "eval_prog: line"
+                (Line(3.0, 2.3))
+                (Line(3.0, 2.3))
+
+let _ = do_test "eval_prog: verticalline"
+                (VerticalLine(3.0))
+                (VerticalLine(3.0))
         
 (* a few intersection tests *)
 

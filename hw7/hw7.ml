@@ -157,15 +157,15 @@ let rec eval_prog e env =
   | Shift(dx, dy, geom_exp) -> (* add a case for shift expression *)
     match geom_exp with 
         | NoPoints -> NoPoints
-        | Point(x, y) -> Point(x+dx, y+dy)
-        | Line (m, b) -> Line(m, b+dy-m*dx)
-        | VerticalLine (x) -> VerticalLine(x+dx)
-        | LineSegment (x1, y1, x2, y2) -> LineSegment(x1+dx, y1+dy, x2+dx, y2+dy)
-        | _ -> eval_prog Shift(dx, dy, eval_prog geom_exp env) env
+        | Point(x, y) -> Point(Float.add x dx, Float.add y dy)
+        | Line (m, b) -> Line(m, Float.sub (Float.add b dy) (Float.mul m dx))
+        | VerticalLine (x) -> VerticalLine(Float.add x dx)
+        | LineSegment (x1, y1, x2, y2) -> LineSegment(Float.add x1 dx, Float.add y1 dy, Float.add x2 dx, Float.add y2 dy)
+        | _ -> eval_prog (Shift(dx, dy, (eval_prog geom_exp env))) env
     
 let min_max a b =
-  if(a <= b) then a b
-  else b a
+  if(a > b) then (a, b)
+  else (b, a)
 
 (* CHANGE: Add function preprocess_prog of type geom_exp -> geom_exp *)
 let rec preprocess_prog e = 
@@ -173,9 +173,9 @@ let rec preprocess_prog e =
     | LineSegment (x1, y1, x2, y2) -> 
       let xs = min_max x1 x2 in
       let ys = min_max y1 y2 in
-      if(float_close_point x1 y1 x2 y2) then Point(x1 y1)
+      if(float_close_point x1 y1 x2 y2) then Point(x1, y1)
       else if(float_close x1 x2) then LineSegment (x1, fst(ys), x2, snd(ys)) 
-      else LineSegment (fst(xs), y1, snd(xs), y2)
+      else LineSegment (fst(xs), fst(ys), snd(xs), snd(ys))
     | Intersect (e1, e2) -> Intersect(preprocess_prog(e1), preprocess_prog(e2))
     | Let (s, e1, e2) -> Let(s, preprocess_prog(e1), preprocess_prog(e2))
     | Shift (f1, f2, e) -> Shift(f1, f2, preprocess_prog(e))
