@@ -53,9 +53,18 @@
                 (new line-segment% [x1 3.2][y1 4.1][x2 -3.2][y2 -4.1]))
                "flip an improper line-segment%")
 
+   (check-true (same-geometry-value
+                (send (new line-segment% [x1 3.2][y1 4.9][x2 3.2][y2 4.1]) preprocess-prog)
+                (new line-segment% [x1 3.2][y1 4.9][x2 3.2][y2 4.1]))
+               "do not flip a proper line-segment%")
+
    (check-prog (new shift% [dx 3.0][dy 4.0][e (new point% [x 4.0][y 4.0])])
                (new point% [x 7.0][y 8.0])
                "shifting a point")
+
+   (check-prog (new shift% [dx 3.0][dy 4.0][e (new line-segment% [x1 3.2][y1 4.1][x2 3.2][y2 4.1])])
+               (new point% [x 6.2][y 8.1])
+               "shifting a line segment after changing it to a point")
 
    (check-prog (new let% [s "a"][e1 (new point% [x 4.0][y 4.0])]
                          [e2 (new shift% [dx 3.0][dy 4.0][e (new var% [s "a"])])])
@@ -68,6 +77,71 @@
                (new point% [x 7.0][y 8.0])
                "using a shadowing variable")
 
+   (check-prog (new intersect% [e1 (new line% [m 1][b 1])]
+                               [e2 (new line% [m 1][b 1])])
+               (new line% [m 1][b 1])
+               "intersection: two non line segments always overlapping")
+
+   (check-prog (new intersect% [e1 (new line% [m 3][b 1])]
+                    [e2 (new line% [m 1][b 1])])
+               (new point% [x 0][y 1])
+               "intersection: two non-parallel lines that only overlap at common y-intercept")
+
+   (check-prog (new intersect% [e1 (new line% [m 1][b 2])]
+                    [e2 (new line% [m 1][b 1])])
+               (new no-points%)
+               "intersection: two parallel lines that never overlap")
+
+   (check-prog (new intersect% [e1 (new line% [m 1][b 2])]
+                    [e2 (new line-segment% [x1 1][y1 1][x2 3][y2 3])])
+               (new no-points%)
+               "intersection: line and segment never overlap")
+
+   (check-prog (new intersect% [e1 (new line% [m 1][b 0])]
+                    [e2 (new line-segment% [x1 1][y1 1][x2 3][y2 3])])
+               (new line-segment% [x1 3][y1 3][x2 1][y2 1])
+               "intersection: line and segment overlap across whole segment")
+
+   (check-prog (new intersect% [e1 (new vertical-line% [x 10])]
+                    [e2 (new line-segment% [x1 0][y1 2][x2 2][y2 4])])
+               (new no-points%)
+               "intersection: vertical line and segment never overlap")
+
+   (check-prog (new intersect% [e1 (new line% [m 1][b 0])]
+                    [e2 (new vertical-line% [x 6])])
+               (new point% [x 6][y 6])
+               "intersection: vertical line and line overlap at one point")
+
+   (check-prog (new intersect% [e1 (new point% [x 1][y 4])]
+                    [e2 (new vertical-line% [x 6])])
+               (new no-points%)
+               "intersection: point and vertical line never overlap")
+
+   (check-prog (new intersect% [e1 (new point% [x 1][y 4])]
+                    [e2 (new line% [m 1][b 0])])
+               (new no-points%)
+               "intersection: point and line never overlap")
+
+   (check-prog (new intersect% [e1 (new line% [m 3][b 0])]
+                    [e2 (new line-segment% [x1 0][y1 2][x2 2][y2 4])])
+               (new point% [x 1][y 3])
+               "intersection: line and segment overlap at one point")
+
+   (check-prog (new intersect% [e1 (new vertical-line% [x 0])]
+                    [e2 (new line-segment% [x1 0][y1 2][x2 2][y2 4])])
+               (new point% [x 0][y 2])
+               "intersection: segment and vertical line overlap at one point")
+
+   (check-prog (new intersect% [e1 (new point% [x 6][y 4])]
+                    [e2 (new vertical-line% [x 6])])
+               (new point% [x 6][y 4])
+               "intersection: point and vertical line overlap at one point")
+
+   (check-prog (new intersect% [e1 (new point% [x 1][y 1])]
+                    [e2 (new line% [m 1][b 0])])
+               (new point% [x 1][y 1])
+               "intersection: point and line overlap at one point")
+   
    (check-prog (new intersect% [e1 (new line-segment% [x1 0.0][y1 0.0][x2 0.0][y2 2.0])]
                                [e2 (new line-segment% [x1 0.0][y1 1.0][x2 0.0][y2 3.0])])
                (new line-segment% [x1 0.0][y1 2.0][x2 0.0][y2 1.0])
@@ -101,7 +175,8 @@
    (check-prog (new intersect% [e1 (new line-segment% [x1 1.0][y1 2.0][x2 2.0][y2 4.0])]
                                [e2 (new line-segment% [x1 0.0][y1 0.0][x2 3.0][y2 6.0])])
                (new line-segment% [x1 2.0][y1 4.0][x2 1.0][y2 2.0])
-               "intersection: non-vertical segment containment, reversed order")))
+               "intersection: non-vertical segment containment, reversed order")
+))
 
 (require rackunit/text-ui)
 
